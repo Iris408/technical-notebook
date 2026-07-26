@@ -456,6 +456,39 @@
                 データの流れ全体を追跡することが重要だと学びました。
             </p>
           </article>
+
+          <article class="card">
+            <div class="log-meta">2026-07-26 · フルスタック / React / FastAPI</div>
+
+            <h3>ページネーション導入後のダッシュボード分析の修正</h3>
+
+            <p>
+              <span class="log-label">問題:</span>
+              Inventory Management System の商品数を増やしている際に、ダッシュボードの
+              統計情報が PostgreSQL に保存されている在庫データと一致していないことに
+              気づきました。新しい商品を追加しても、ダッシュボードは10件分のデータだけを
+              使用して合計を表示していました。
+            </p>
+
+            <p>
+              <span class="log-label">修正:</span>
+              バックエンド API を確認し、<code>/items</code> エンドポイントが意図的に
+              10件までのデータを返すページネーション設定になっていることを確認しました。
+              次に、<code>/items/stats</code>、<code>/items/category-summary</code>、
+              <code>/items/category-value</code> をテストし、データベース全体を対象に
+              集計していることを確認しました。React フロントエンドを修正し、
+              ダッシュボードの統計には集計専用エンドポイントを使用しながら、
+              在庫一覧にはページネーションを残しました。
+            </p>
+
+            <p>
+              <span class="log-label">学び:</span>
+              ページネーションされた一覧データを、ダッシュボード全体の統計計算に
+              使用するべきではありません。React の UI から API、データベースまで
+              データの流れを確認したことで、問題がバックエンドの計算ではなく、
+              フロントエンドのデータ取得方法にあることを特定できました。
+            </p>
+          </article>
         </div>
 
         <div class="lang-en-block">
@@ -623,6 +656,39 @@
                 Multiple bugs can often share a single root cause. Following data from the
                 UI through the API and database is often more effective than fixing symptoms
                 individually.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="log-meta">2026-07-26 · Full-Stack / React / FastAPI</div>
+
+            <h3>Fixing Dashboard Analytics After Introducting Pagination</h3>
+
+            <p>
+              <span class="log-label">Problem:</span>
+              While expanding the Inventory Management System, I noticed the dashboard
+              statistics did not match the inventory stored in PostgreSQL. New products
+              were added, but the dashboard continued to display totals based on only ten
+              items.
+            </p>
+
+            <p>
+              <span class="log-label">Fix:</span>
+              I reviewed the backend API and confirmed that the <code>/items</code>
+              endpoint intentionally limits results to ten records. I then tested the
+              <code>/items/stats</code>, <code>/items/category-summary</code>, and
+              <code>/items/category-value</code> endpoints and confirmed that they
+              calculated data across the full database. I updated the React frontend to
+              use these aggregation endpoints for dashboard statistics while keeping the
+              inventory list paginated.
+            </p>
+
+            <p>
+              <span class="log-label">Lesson:</span>
+              Paginated operational data should not be used to calculate global dashboard
+              metrics. Tracing data from the React UI through the API and database helped
+              identify that the issue was caused by the frontend data flow rather than the
+              backend calculations.
             </p>
           </article>
           
