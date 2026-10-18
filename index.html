@@ -114,9 +114,15 @@
     }
 
     .page {
+      --gutter: 20px;
       max-width: calc(var(--measure) + 40px);
       margin: 0 auto;
-      padding: 0 20px 40px;
+      /* Room for the fixed footer; --footer-height is measured by the script (64px fallback). */
+      padding: 0 20px calc(var(--footer-height, 64px) + 32px);
+    }
+
+    html {
+      scroll-padding-bottom: calc(var(--footer-height, 64px) + 12px);
     }
 
     a {
@@ -569,17 +575,32 @@
 
     /* Footer */
 
+    /* Fixed to the viewport; text and divider stay aligned with the content column. */
     footer {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: baseline;
       gap: 4px 16px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+      padding: 12px max(var(--gutter), calc((100% - var(--measure)) / 2)) calc(12px + env(safe-area-inset-bottom, 0px));
+      background: var(--bg);
       color: var(--muted);
       font-size: 0.75rem;
       line-height: 1.5;
+    }
+
+    footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: max(var(--gutter), calc((100% - var(--measure)) / 2));
+      left: max(var(--gutter), calc((100% - var(--measure)) / 2));
+      border-top: 1px solid var(--border);
     }
 
     .copyright {
@@ -623,7 +644,8 @@
 
     @media (max-width: 640px) {
       .page {
-        padding: 0 16px 32px;
+        --gutter: 16px;
+        padding: 0 16px calc(var(--footer-height, 64px) + 24px);
       }
 
       .site-header {
@@ -1842,6 +1864,23 @@
 
   <script>
     var root = document.documentElement;
+
+    // Keep the content clear of the fixed footer, whose height changes when it wraps.
+    (function () {
+      var footer = document.querySelector("footer");
+
+      function setFooterHeight() {
+        root.style.setProperty("--footer-height", footer.offsetHeight + "px");
+      }
+
+      setFooterHeight();
+      if (window.ResizeObserver) {
+        new ResizeObserver(setFooterHeight).observe(footer);
+      } else {
+        window.addEventListener("resize", setFooterHeight);
+      }
+    })();
+
     var currentLanguage = root.classList.contains("show-en") ? "en" : "jp";
     var titles = {
       home: { jp: "マグロワールアシュリー - 技術ノート", en: "Ashleigh Magloire - Technical Notebook" },
