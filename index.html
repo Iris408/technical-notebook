@@ -4,7 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Ashleigh M. | 技術ブログ</title>
+  <title>マグロワールアシュリー - 技術ノート</title>
+  <meta name="description" content="Ashleigh Magloire の技術ノート。開発と学習の記録 / A technical notebook of learning and development notes." />
+  <meta name="color-scheme" content="light dark" />
+
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23526859'/%3E%3Crect x='14' y='14' width='4' height='36' rx='2' fill='%23ffffff' fill-opacity='0.55'/%3E%3Ctext x='38' y='45' text-anchor='middle' font-family='Arial, sans-serif' font-size='34' font-weight='700' fill='%23ffffff'%3EA%3C/text%3E%3C/svg%3E"
+  />
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var theme = null;
+      var language = null;
+      try {
+        theme = localStorage.getItem("theme");
+        language = localStorage.getItem("language");
+      } catch (e) {}
+      if (theme !== "light" && theme !== "dark") {
+        theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      }
+      root.setAttribute("data-theme", theme);
+      if (language === "en") {
+        root.classList.add("show-en");
+        root.lang = "en";
+      }
+
+      // Pick the view before first paint so the page does not flash.
+      var hash = location.hash.slice(1);
+      root.classList.add("js");
+      root.setAttribute("data-view", hash === "about" || hash === "about-contact" ? "about" : hash === "notes" ? "notes" : "home");
+    })();
+  </script>
 
   <style>
     :root {
@@ -13,57 +48,132 @@
       --muted: #6b7280;
       --card: #ffffff;
       --border: #e5e7eb;
-      --accent: #4f7f5f;
+      --accent: #526859;
+      --code-bg: #f1f5f2;
+      --measure: 720px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+      --font-sans-jp: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+      --font-serif: "Noto Serif JP", "Hiragino Mincho ProN", Georgia, "Times New Roman", serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #151917;
+        --text: #e4e8e5;
+        --muted: #9aa39d;
+        --card: #1c211e;
+        --border: #2d3430;
+        --accent: #9cb8a4;
+        --code-bg: #262d29;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #151917;
+      --text: #e4e8e5;
+      --muted: #9aa39d;
+      --card: #1c211e;
+      --border: #2d3430;
+      --accent: #9cb8a4;
+      --code-bg: #262d29;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: var(--font-sans-jp);
       background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.9;
+    }
+
+    html[lang="en"] body {
+      font-family: var(--font-sans);
+      line-height: 1.6;
+    }
+
+    /* Japanese is never italicised; emphasis uses weight or 「」. */
+    html[lang="ja"] em,
+    html[lang="ja"] i {
+      font-style: normal;
+      font-weight: 700;
     }
 
     .page {
-      max-width: 900px;
+      max-width: calc(var(--measure) + 40px);
       margin: 0 auto;
-      padding: 32px 20px 64px;
+      padding: 0 20px 40px;
     }
 
-    header {
-      padding: 48px 0 32px;
-      border-bottom: 1px solid var(--border);
+    a {
+      color: var(--accent);
     }
 
-    nav {
+    /* Header */
+
+    .site-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 48px;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      padding: 14px 0 12px;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
     }
 
     .logo {
+      font-family: var(--font-serif);
       font-weight: 700;
       color: var(--accent);
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
+      text-decoration: none;
     }
 
-    .nav-links {
+    .header-right,
+    .site-nav,
+    .header-tools {
       display: flex;
-      gap: 18px;
       flex-wrap: wrap;
       align-items: center;
     }
 
-    .nav-links a,
-    .language-toggle button {
+    .header-right {
+      gap: 8px 22px;
+    }
+
+    .site-nav {
+      gap: 20px;
+    }
+
+    /* Language and theme controls sit apart from the page links. */
+    .header-tools {
+      gap: 16px;
+      padding-left: 22px;
+      border-left: 1px solid var(--border);
+    }
+
+    .site-nav a,
+    .language-toggle button,
+    .sort-toggle button,
+    .theme-toggle {
       color: var(--muted);
       text-decoration: none;
+      font: inherit;
       font-size: 0.95rem;
       background: none;
       border: none;
@@ -71,42 +181,121 @@
       padding: 0;
     }
 
-    .nav-links a:hover,
-    .language-toggle button:hover {
+    .site-nav a:hover,
+    .site-nav a[aria-current="page"],
+    .language-toggle button:hover,
+    .theme-toggle:hover {
       color: var(--accent);
     }
 
-    h1 {
-      font-size: clamp(2.2rem, 6vw, 4rem);
-      line-height: 1.1;
-      margin: 0 0 20px;
-      max-width: 720px;
-    }  
-    
-    .hero-title-jp span {
+    .language-toggle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .language-toggle button[aria-pressed="true"] {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .theme-toggle .icon-sun,
+    :root[data-theme="dark"] .theme-toggle .icon-moon {
+      display: none;
+    }
+
+    :root[data-theme="dark"] .theme-toggle .icon-sun {
       display: block;
     }
 
-    .intro {
-      font-size: 1.1rem;
-      color: var(--muted);
-      max-width: 680px;
-      margin-bottom: 0;
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
     }
 
-    section {
-      padding: 48px 0;
-      border-bottom: 1px solid var(--border);
+    /* Typography */
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    /* Views: with JS, only the active view is shown (see the router script). */
+    .js:not([data-view="about"]) #view-about,
+    .js[data-view="about"] #view-home,
+    .js:not([data-view="notes"]) .note-extra,
+    .js:not([data-view="notes"]) .when-all,
+    .js[data-view="notes"] .when-selected,
+    :root .when-selected {
+      display: none;
+    }
+
+    .js:not([data-view="notes"]) .when-selected {
+      display: inline-block;
+    }
+
+    /* Home previews stay compact: summaries only appear in the Notes view. */
+    .js:not([data-view="notes"]) .note-summary {
+      display: none;
+    }
+
+    .js:not([data-view="notes"]) .card h3 {
+      margin-bottom: 10px;
+    }
+
+    /* The Notes view reuses the home note list, without the intro. */
+    .js[data-view="notes"] .intro-block {
+      display: none;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 1.15rem + 2vw, 2.25rem);
+      line-height: 1.3;
+      margin: 0 0 14px;
+      overflow-wrap: anywhere;
+      word-break: auto-phrase;
+      text-wrap: balance;
     }
 
     h2 {
-      font-size: 1.6rem;
-      margin: 0 0 18px;
+      font-size: 1.4rem;
+      margin: 0 0 16px;
     }
 
     h3 {
-      margin: 0 0 8px;
-      font-size: 1.1rem;
+      margin: 0 0 12px;
+      font-size: 1.125rem;
     }
 
     p {
@@ -114,28 +303,109 @@
     }
 
     code {
-      background: #f1f5f2;
+      font-family: var(--font-mono);
+      background: var(--code-bg);
       padding: 2px 5px;
-      font-size: 0.9rem;
+      border-radius: 3px;
+      font-size: 0.85em;
+      overflow-wrap: anywhere;
     }
 
     .muted {
       color: var(--muted);
     }
 
+    .section-label {
+      margin: 0 0 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+    }
+
+    /* Intro */
+
+    .intro-block {
+      padding: 44px 0 36px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .intro-lead {
+      margin: 0 0 4px;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .intro {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    /* Sections */
+
+    section {
+      padding: 40px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-child {
+      border-bottom: none;
+    }
+
+    [id] {
+      scroll-margin-top: 24px;
+    }
+
+    .section-lead {
+      margin-bottom: 24px;
+    }
+
+    .prose p {
+      max-width: 68ch;
+    }
+
+    /* Notes */
+
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 0;
-      padding: 16px;
-      margin-bottom: 14px;
+      border-radius: 6px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+
+    .card--latest {
+      border-left: 3px solid var(--accent);
+    }
+
+    .latest-label {
+      display: inline-block;
+      margin-right: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
     .log-meta {
-      font-size: 0.85rem;
-      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.6;
+      color: var(--accent);
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card p {
       margin-bottom: 10px;
-      letter-spacing: 0.02em;
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
     }
 
     .log-label {
@@ -143,21 +413,153 @@
       color: var(--accent);
     }
 
+    .card h3 {
+      margin-bottom: 6px;
+    }
+
+    .card .note-summary {
+      margin-bottom: 12px;
+      color: var(--muted);
+    }
+
+    .note-details > summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--accent);
+    }
+
+    .note-details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .note-details > summary::before {
+      content: "";
+      border-left: 5px solid currentColor;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      transition: transform 0.15s ease;
+    }
+
+    .note-details[open] > summary::before {
+      transform: rotate(90deg);
+    }
+
+    .note-details > summary:hover {
+      text-decoration: underline;
+    }
+
+    .note-details > summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    .note-details .when-open,
+    .note-details[open] .when-closed {
+      display: none;
+    }
+
+    .note-details[open] .when-open {
+      display: inline;
+    }
+
+    .note-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .note-details > summary::before {
+        transition: none;
+      }
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-head .section-label {
+      margin: 0;
+    }
+
+    .view-all {
+      font-size: 0.8rem;
+      font-weight: 700;
+      line-height: 1.5;
+      text-decoration: none;
+    }
+
+    /* The sort toggle needs JavaScript, so it only appears in the scripted Notes view. */
+    .sort-toggle {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .js[data-view="notes"] .sort-toggle {
+      display: inline-flex;
+    }
+
+    .sort-toggle button {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: 3px 12px;
+    }
+
+    .sort-toggle button + button {
+      border-left: 1px solid var(--border);
+    }
+
+    .sort-toggle button[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+    }
+
+    .sort-toggle button[aria-pressed="true"]:hover {
+      color: var(--bg);
+    }
+
+    .sort-toggle button:focus-visible {
+      outline-offset: -3px;
+    }
+
+    .view-all:hover {
+      text-decoration: underline;
+    }
+
+    /* Contact */
+
     .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
 
     .contact-link {
-      display: block;
+      display: inline-block;
       color: var(--text);
       text-decoration: none;
       border: 1px solid var(--border);
       background: var(--card);
-      padding: 14px 16px;
-      border-radius: 0;
-      font-size: 0.95rem;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      line-height: 1.6;
     }
 
     .contact-link:hover {
@@ -165,44 +567,96 @@
       color: var(--accent);
     }
 
+    /* Footer */
+
     footer {
-      padding-top: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 4px 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.75rem;
+      line-height: 1.5;
     }
 
-    .lang-en {
-      display: none;
+    .copyright {
+      margin: 0;
     }
 
-    body.show-en .lang-jp {
-      display: none;
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-left: auto;
     }
 
-    body.show-en .lang-en {
-      display: inline;
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
     }
 
-    body.show-en .lang-en-block {
-      display: block;
+    .footer-links a:hover {
+      color: var(--accent);
     }
 
+    /* Language */
+
+    .lang-en,
     .lang-en-block {
       display: none;
     }
 
+    .show-en .lang-jp {
+      display: none;
+    }
+
+    .show-en .lang-en {
+      display: inline;
+    }
+
+    .show-en .lang-en-block {
+      display: block;
+    }
+
     @media (max-width: 640px) {
-      nav {
-        align-items: flex-start;
-        flex-direction: column;
+      .page {
+        padding: 0 16px 32px;
       }
 
-      .nav-links {
+      .site-header {
+        padding: 12px 0 10px;
+      }
+
+      .site-nav {
+        gap: 16px;
+      }
+
+      .header-right {
+        gap: 8px 16px;
+      }
+
+      .header-tools {
         gap: 12px;
+        padding-left: 16px;
       }
 
-      header {
-        padding-top: 28px;
+      .intro-block {
+        padding: 32px 0 28px;
+      }
+
+      section {
+        padding: 32px 0;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      h3 {
+        font-size: 1.05rem;
       }
     }
   </style>
@@ -210,333 +664,950 @@
 
 <body>
   <div class="page">
-    <header>
-      <nav>
-        <div class="logo">Ashleigh M.</div>
+    <header class="site-header">
+      <a class="logo" href="#home">Ashleigh Magloire</a>
 
-        <div class="nav-links">
-          <a href="#about">
-            <span class="lang-jp">自己紹介</span>
-            <span class="lang-en">About</span>
-          </a>
+      <div class="header-right">
+      <nav class="site-nav" aria-label="Main">
+        <a href="#notes" data-nav="notes">
+          <span class="lang-jp">ノート</span>
+          <span class="lang-en">Notes</span>
+        </a>
 
-          <a href="#log">
-            <span class="lang-jp">技術ログ</span>
-            <span class="lang-en">Log</span>
-          </a>
-
-          <a href="#contact">
-            <span class="lang-jp">連絡先</span>
-            <span class="lang-en">Contact</span>
-          </a>
-
-          <span class="language-toggle">
-            <button onclick="setLanguage('jp')">日本語</button>
-            /
-            <button onclick="setLanguage('en')">EN</button>
-          </span>
-        </div>
+        <a href="#about" data-nav="about">
+          <span class="lang-jp">自己紹介</span>
+          <span class="lang-en">About</span>
+        </a>
       </nav>
 
-      <div class="lang-jp">
-        <h1 class="hero-title-jp">
-          <span>作って、壊して、</span>
-          <span>また作る</span>
-        </h1>
+      <div class="header-tools">
+        <span class="language-toggle">
+          <button type="button" id="lang-jp" lang="ja" aria-pressed="true" onclick="setLanguage('jp')">JP</button>
+          /
+          <button type="button" id="lang-en" lang="en" aria-pressed="false" onclick="setLanguage('en')">EN</button>
+        </span>
 
-        <p class="intro">
-          バックエンドおよびフルスタック開発者として、開発プロセスを記録しています。
-          構築したもの、発生した問題、そしてその過程で学んだことを残すために。
-        </p>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="ダークモードに切り替える" onclick="toggleTheme()">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+        </button>
       </div>
-
-      <div class="lang-en-block">
-        <h1>Learning out loud.</h1>
-
-        <p class="intro">
-          A backend and full-stack developer documenting the process — what I build, what breaks, 
-          and what I learn along the way.
-        </p>
       </div>
     </header>
 
     <main>
-      <section id="about">
-        <div class="lang-jp">
-          <h2>ひとこと</h2>
+      <div class="view" id="view-home">
+        <div class="intro-block">
+          <div class="lang-jp">
+            <p class="section-label">// 技術ノート</p>
+            <h1 tabindex="-1">作る、壊す、書き残す。</h1>
+            <p class="intro-lead">作って、壊して、また作る。</p>
+            <p class="intro">バックエンド／フルスタック開発の記録です。作ったもの、壊れたもの、そこから学んだことを残しています。</p>
+          </div>
 
-          <p>
-            私は自動車技術のオペレーション部門出身で、現在はエンジニアリング分野に転身しています。
-            私の思考プロセスを反映したプロジェクト構築に取り組んでいます。
-            つまり、何をしたかだけでなく、なぜそうしたのかを説明するドキュメントを作成するということです。
-          </p>
-
-          <p>
-            このブログでは、何が壊れて、なぜ壊れたのかを含め、
-            実際のプロセスを記録していきます。
-          </p>  
+          <div class="lang-en-block">
+            <p class="section-label">// technical notebook</p>
+            <h1 tabindex="-1">Build, break, document.</h1>
+            <p class="intro-lead">Learning out loud.</p>
+            <p class="intro">Notes from a backend and full-stack developer: what I build, what breaks, and what I learn fixing it.</p>
+          </div>
         </div>
 
-        <div class="lang-en-block">
-          <h2>Briefly</h2>
+        <section id="notes">
+          <div class="lang-jp">
+            <div class="section-head">
+              <h2 class="section-label" tabindex="-1">
+                <span class="when-selected">// 主なノート</span>
+                <span class="when-all">// すべてのノート</span>
+              </h2>
 
-          <p>
-            I come from an operations background in automotive tech and I'm moving into engineering — building projects that reflect how I actually think: 
-            systematically, carefully, with documentation that explains the why not just the what.
-          </p>
+              <a class="view-all when-selected" href="#notes">すべてのノートを見る →</a>
 
-          <p>
-            This blog is where I record the real process, including what breaks, why, and how fix I it.
-          </p>
-        </div>
-      </section>
+              <div class="sort-toggle when-all" role="group" aria-label="並び順">
+                <button type="button" data-sort="newest" aria-pressed="true">新しい順</button>
+                <button type="button" data-sort="oldest" aria-pressed="false">古い順</button>
+              </div>
+            </div>
 
-      <section id="log">
-        <div class="lang-jp">
-          <h2>フィールドノート</h2>
+            <p class="muted section-lead when-all">プロジェクトから学んだ短い記録です。各ログでは、問題、修正方法、学んだことをまとめています。</p>
 
-          <p class="muted">
-            プロジェクトから学んだ短い記録です。各ログでは、問題、修正方法、
-            学んだことをまとめています。
-          </p>
+            <div class="note-list">
+            <article class="card card--latest">
+              <div class="log-meta"><span class="latest-label">最新</span>2026-10-18 · PartsPilot v3 · バックエンド / セキュリティ / テスト / OpenAPI</div>
 
-          <article class="card">
-          <div class="log-meta">2026-07-11 · 認証 / デバッグ / FastAPI</div>
+              <h3>OpenAPIのセキュリティ修正を検証する</h3>
 
-            <h3>JWT Dashboard の管理者アクセスを修正する</h3>
+              <p class="note-summary">別のPartsPilot v3ブランチで、OpenAPIのセキュリティ修正を既存のテストとエンドポイント回帰チェックで検証しました。</p>
 
-            <p>
-              <span class="log-label">問題:</span>
-              JWT Authentication Dashboard ではログインはできましたが、
-              管理者ページからユーザー一覧を取得できませんでした。
-              ブラウザでは CORS エラー、接続エラー、500 Internal Server Error が表示されました。
-            </p>
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：OpenAPIのセキュリティ修正を検証する</span>
+                </summary>
 
-            <p>
-              <span class="log-label">原因:</span>
-              FastAPI バックエンドの CORS 設定に、ローカル開発用の
-              <code>http://localhost:5175</code> が含まれていませんでした。
-              さらに、管理者チェックでは <code>current_user.role</code> を使っていましたが、
-              実際の <code>current_user</code> は辞書型でした。
-            </p>
+                <div class="note-body">
 
-            <p>
-              <span class="log-label">修正:</span>
-              CORS の許可リストにローカルフロントエンドのURLを追加し、
-              管理者ロールの確認を <code>current_user.get("role")</code> に変更しました。
-            </p>
+              <p>
+                <span class="log-label">問題:</span>
+                OpenAPIのセキュリティ修正が、既存のエンドポイントの動作に影響していないか確認する必要がありました。
+              </p>
 
-            <p>
-              <span class="log-label">学んだこと:</span>
-              フロントエンドに表示されるエラーでも、原因がバックエンドにある場合があります。
-              CORS、認証、認可、デプロイログを順番に確認することが重要だと学びました。
-            </p>
-          </article>
+              <p>
+                <span class="log-label">原因:</span>
+                セキュリティ関連の変更は、APIのほかの部分でリグレッションを引き起こすおそれがあります。
+              </p>
 
-          <article class="card">
-          <div class="log-meta">2026-07-11 · ポートフォリオ / フロントエンド / プロジェクト整理</div>
+              <p>
+                <span class="log-label">修正:</span>
+                別のv3ブランチで修正を検証し、70件のテストと55件のエンドポイント回帰チェックがすべて成功しました。変更はコミットしてプッシュ済みですが、まだmainにはマージしていません。
+              </p>
 
-            <h3>ポートフォリオの注目プロジェクトを更新する</h3>
+              <p>
+                <span class="log-label">学んだこと:</span>
+                セキュリティに関わる変更は、API全体の回帰テストスイートで確認することが大切です。
+              </p>
+                </div>
+              </details>
+            </article>
 
-            <p>
-              <span class="log-label">問題:</span>
-              ポートフォリオの注目プロジェクトが、現在のスキルや最新の作業内容を                
-              十分に反映していませんでした。
-            </p>
+            <article class="card">
+              <div class="log-meta">2026-10-16 · Bloom v3 · 情報設計 / ルーティング / QA</div>
 
-            <p>
-              <span class="log-label">修正:</span>
-                ホームページの注目プロジェクトを4つに増やし、
-                Inventory Management System、Bloom、Mini User API、
-                JWT Authentication Dashboard を中心に表示するようにしました。
-            </p>
+              <h3>操作モードからアプリ構成へ</h3>
 
-            <p>
-              <span class="log-label">学んだこと:</span>
-                ポートフォリオはプロジェクト一覧ではなく、
-              「それぞれのプロジェクトで何を証明できるか」を伝える場所です。
-            </p>
-          </article>
+              <p class="note-summary">Bloomの操作モードの仕様を確定し、アプリの情報設計とルートに反映しました。</p>
 
-          <article class="card">
-            <div class="log-meta">2026-06-13 · バックエンド / テスト / Pytest</div>
-            
-            <h3>pytest の import path を修正する</h3>
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：操作モードからアプリ構成へ</span>
+                </summary>
 
-            <p>
-              <span class="log-label">問題:</span>
-              <code>app/__init__.py</code> は存在していたのに、
-              pytest が <code>app</code> パッケージを見つけられませんでした。
-            </p>
+                <div class="note-body">
 
-            <p>
-              <span class="log-label">修正:</span>
-              <code>pytest.ini</code> を追加し、<code>pythonpath = .</code> と
-              <code>testpaths = tests</code> を設定しました。
-            </p>
+              <p>
+                <span class="log-label">問題:</span>
+                Bloomのモードを、アプリの情報設計とルートに反映する必要がありました。
+              </p>
 
-            <p>
-              <span class="log-label">学んだこと:</span>
-              <code>__init__.py</code> はフォルダを Python パッケージとして扱えるようにします。
-              しかし、pytest がどこから探し始めるかは <code>pytest.ini</code> で指定します。
-            </p>
-          </article>
+              <p>
+                <span class="log-label">原因:</span>
+                ルート構成を確定する前に、モードの仕様を固める必要がありました。
+              </p>
 
-          <article class="card">
-            <div class="log-meta">2026-06 · フロントエンド / アクセシビリティ / UI</div>
+              <p>
+                <span class="log-label">修正:</span>
+                モードの仕様を完成させて確定し、情報設計とルートに反映したうえで、ルートをQAチェックしました。
+              </p>
 
-            <h3>アプリの表示設定を使いやすくする</h3>
+              <p>
+                <span class="log-label">学んだこと:</span>
+                ルートを確定する前に体験モードを定義しておくと、アプリの構成が意図した体験に沿ったものになります。
+              </p>
+                </div>
+              </details>
+            </article>
 
-            <p>
-              <span class="log-label">問題:</span>
-              アクセシビリティ設定が深い設定ページにあると、ユーザーが見つけにくくなります。
-            </p>
+            <article class="card">
+              <div class="log-meta">2026-09-28 · PartsPilot v3 · バックエンド / Docker / Git</div>
 
-            <p>
-              <span class="log-label">修正:</span>
-              フォントサイズや読みやすいフォント設定など、重要な表示設定を
-              ヘッダーの小さなメニューに移動します。
-            </p>
+              <h3>.NETのビルド出力をGitから外す</h3>
 
-            <p>
-              <span class="log-label">学んだこと:</span>
-              アクセシビリティ設定は、プロフィール設定だけでなく、
-              公開ページやログイン後のページからも簡単に使えるべきです。
-            </p>
-          </article>
+              <p class="note-summary">PartsPilot v3への移行作業中にGitの変更に表示されていた、.NETの生成ファイルを整理しました。</p>
 
-          <article class="card">
-            <div class="log-meta">2026-07 · バックエンド / デバッグ</div>
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：.NETのビルド出力をGitから外す</span>
+                </summary>
 
-            <h3>空のAlembicマイグレーションの修正</h3>
+                <div class="note-body">
 
-            <p>
-              <span class="log-label">問題：</span>
-              Alembic がマイグレーションファイルを生成しましたが、以下が含まれていませんでした：
-              op.create_table(「tickets」, ...)
-            </p>
+              <p>
+                <span class="log-label">問題:</span>
+                <code>bin/</code> と <code>obj/</code> フォルダの生成ファイルがソースの変更と一緒に表示され、リポジトリの状態を確認しにくくなっていました。
+              </p>
 
-            <p>
-              <span class="log-label">解決策：</span>
-              プロジェクトルートおよび Backend フォルダ内の正しいコマンドの場所を使用して、
-              マイグレーションファイルを再生成します。
-            </p>
+              <p>
+                <span class="log-label">原因:</span>
+                生成されたビルド出力が、Gitの追跡対象から完全には除外されていませんでした。
+              </p>
 
-            <p>
-              <span class="log-label">教訓：</span>
-              Alembicは、SQLAlchemyのモデルを現在のデータベースの状態と比較します。
-              テーブルがすでに存在する場合、Alembicは空のマイグレーションを生成することがあります。
-            </p>
-          </article>
+              <p>
+                <span class="log-label">修正:</span>
+                ignoreルールを更新し、生成ファイルをGitの追跡対象から外しました。この作業はリポジトリの内容の整理に絞ったもので、PartsPilot v3への移行が完了したわけではありません。
+              </p>
 
-          <article class="card">
-            <div class="log-meta">2026-07 · フルスタック / React / FastAPI</div>
+              <p>
+                <span class="log-label">学んだこと:</span>
+                ビルド出力は早い段階で除外しておくべきです。生成ファイルがすでに追跡されている場合、<code>.gitignore</code> を更新するだけでは不十分です。インデックスから削除し、ソースの変更をステージする前にGitの状態を確認します。
+              </p>
+                </div>
+              </details>
+            </article>
 
-            <h3>Bloomのルーティン同期問題を修正</h3>
+            <article class="card">
+              <div class="log-meta">2026-08-21 · PartsPilot v2 · フロントエンド / React / JavaScript / FastAPI / デバッグ / フルスタック</div>
 
-            <p>
-              <span class="log-label">問題：</span>
-                ログインユーザーがRoutinesページで作成したルーティンが、
-                HomeページやProgressページに表示されず、再読み込み後も正しく保存されていませんでした。
-                バックエンドAPIはすでに存在していましたが、複数のルーティン機能が動作していないように見える状態でした。
-            </p>
+              <h3>APIレスポンスの形が原因のReact表示エラーを修正する</h3>
 
-            <p>
-              <span class="log-label">修正：</span>
-                フロントエンドのデータフローを調査し、Routines.jsxがバックエンドのCRUD関数を
-                インポートしているにもかかわらず、実際には呼び出していないことを確認しました。
-                認証済みユーザー向けのバックエンド永続化、ページ間同期イベント、
-                ローディング表示、エラー表示、Homeページの自動再読み込みを実装しました。
-            </p>
+              <p class="note-summary">parts配列ではなく、APIレスポンスのラッパーオブジェクトをstateに保存していたことによるReactの表示エラーを修正しました。</p>
 
-            <p>
-              <span class="log-label">学び：</span>
-                複数の不具合が、実際には1つの根本原因から発生している場合があります。
-                個別の症状だけを修正するのではなく、UIからAPI、データベースまで
-                データの流れ全体を追跡することが重要だと学びました。
-            </p>
-          </article>
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：APIレスポンスの形が原因のReact表示エラーを修正する</span>
+                </summary>
 
-          <article class="card">
-            <div class="log-meta">2026-07-26 · フルスタック / React / FastAPI</div>
+                <div class="note-body">
 
-            <h3>ページネーション導入後のダッシュボード分析の修正</h3>
+              <p>
+                <span class="log-label">問題:</span>
+                PartsPilotのフロントエンドはバックエンドからデータを受け取れていましたが、<code>parts.map()</code> を実行しようとしたところで画面がエラーになりました。Reactは <code>parts</code> が配列であることを前提にしていましたが、stateにはレスポンスオブジェクト全体が入っていました。
+              </p>
 
-            <p>
-              <span class="log-label">問題:</span>
-              Inventory Management System の商品数を増やしている際に、ダッシュボードの
-              統計情報が PostgreSQL に保存されている在庫データと一致していないことに
-              気づきました。新しい商品を追加しても、ダッシュボードは10件分のデータだけを
-              使用して合計を表示していました。
-            </p>
+              <p>
+                <span class="log-label">原因:</span>
+                FastAPIのエンドポイントは配列を直接返すのではなく、<code>items</code> プロパティを持つオブジェクトを返していました。フロントエンドでは <code>setParts(data)</code> を使っていたため、そのラッパーオブジェクトがstateに保存されていました。<code>map</code> などの配列メソッドは、このオブジェクトには使えません。
+              </p>
 
-            <p>
-              <span class="log-label">修正:</span>
-              バックエンド API を確認し、<code>/items</code> エンドポイントが意図的に
-              10件までのデータを返すページネーション設定になっていることを確認しました。
-              次に、<code>/items/stats</code>、<code>/items/category-summary</code>、
-              <code>/items/category-value</code> をテストし、データベース全体を対象に
-              集計していることを確認しました。React フロントエンドを修正し、
-              ダッシュボードの統計には集計専用エンドポイントを使用しながら、
-              在庫一覧にはページネーションを残しました。
-            </p>
+              <p>
+                <span class="log-label">修正:</span>
+                返されたJSONの構造を確認し、stateの更新を <code>setParts(data.items)</code> に変更しました。JSXで表示する前に、オブジェクト、プロパティ、配列のインデックス、各要素のプロパティという順にレスポンスをたどり、データの参照パスを確認しました。
+              </p>
 
-            <p>
-              <span class="log-label">学び:</span>
-              ページネーションされた一覧データを、ダッシュボード全体の統計計算に
-              使用するべきではありません。React の UI から API、データベースまで
-              データの流れを確認したことで、問題がバックエンドの計算ではなく、
-              フロントエンドのデータ取得方法にあることを特定できました。
-            </p>
-          </article>
-        </div>
+              <p>
+                <span class="log-label">学んだこと:</span>
+                APIリクエストが成功しても、返ってきたデータがコンポーネントの想定どおりの形とは限りません。Reactのstateを更新する前にレスポンスの構造を確認し、画面に必要な値だけを保存することが大切です。
+              </p>
+                </div>
+              </details>
+            </article>
 
-        <div class="lang-en-block">
-          <h2>Field Notes</h2>
+            <article class="card">
+              <div class="log-meta">2026-08-21 · PartsPilot v2 · Docker / React / FastAPI / CORS / デバッグ / フルスタック</div>
 
-          <p class="muted">
-            Short notes from my projects. Each entry explains the problem, the fix,
-            and the lesson learned.
-          </p>
+              <h3>DockerのポートマッピングとCORSをデバッグする</h3>
 
-          <article class="card">
-            <div class="log-meta">2026-07-11 · Authentication / Debugging / FastAPI</div>
+              <p class="note-summary">コンテナ内部のポートとホストに公開されたポートを区別し、バックエンドのCORS設定を修正して、ReactからFastAPIへの接続エラーを解決しました。</p>
 
-            <h3>Fixing JWT Dashboard Admin Access</h3>
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：DockerのポートマッピングとCORSをデバッグする</span>
+                </summary>
 
-            <p>
-              <span class="log-label">Problem:</span>
-              The JWT Authentication Dashboard login flow worked, but the Admin page
-              could not load users from the deployed Mini User API backend.
-              The browser showed CORS errors, connection errors, and a 500 Internal Server Error.
-            </p>
+                <div class="note-body">
 
-            <p>
-              <span class="log-label">Cause:</span>
-              The deployed FastAPI backend did not allow the local frontend origin
-              <code>http://localhost:5175</code>. The admin route also tried to use
-              <code>current_user.role</code>, but <code>current_user</code> was actually                
-              a dictionary returned from the auth dependency.
-            </p>
+              <p>
+                <span class="log-label">問題:</span>
+                ReactのフロントエンドからFastAPIのバックエンドのパーツを読み込めませんでした。DockerはAPIをホストのポート8001で公開していたのに、リクエストは <code>localhost:8000</code> に送られていました。また、ブラウザからのリクエストには、フロントエンドのオリジンからバックエンドのオリジンへアクセスするための許可も必要でした。
+              </p>
 
-            <p>
-              <span class="log-label">Fix:</span>
-              I added the local frontend origin to the backend CORS allow list and changed
-              the admin role check to use <code>current_user.get("role")</code>.
+              <p>
+                <span class="log-label">原因:</span>
+                Dockerのマッピング <code>8001:8000</code> では、FastAPIはコンテナ内のポート8000で待ち受け、ホストのブラウザからはポート8001を通してアクセスします。さらに、フロントエンドとバックエンドが異なるオリジンで動いていたため、ブラウザがCORSの制限を適用していました。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                フロントエンドのリクエストURLを <code>http://localhost:8001/api/parts</code> に変更し、FastAPIでフロントエンドの開発用オリジンからのリクエストを許可するよう設定しました。ブラウザのエラーとHTTPレスポンスの種類から、接続、ルート、認証、サーバー、CORSのどこで失敗しているのかを切り分けました。
+              </p>
+
+              <p>
+                <span class="log-label">学んだこと:</span>
+                Dockerのポートマッピングには、コンテナ側とホスト側があります。ブラウザで動くフロントエンドのコードはホスト側のポートを使う必要があります。また、クロスオリジンの許可はフロントエンドで回避するのではなく、バックエンドで設定するものです。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card">
+              <div class="log-meta">2026-08-04 · PartsPilot v2 · バックエンド / FastAPI / Pytest / SQLAlchemy / PostgreSQL / Docker</div>
+
+              <h3>Docker外でPartsPilotのテストを動かす</h3>
+
+              <p class="note-summary">分離したテスト用データベースとFastAPIの依存関係オーバーライドを導入し、Docker専用のPostgreSQLホスト名からテスト環境を切り離しました。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：Docker外でPartsPilotのテストを動かす</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題:</span>
+                ホストマシンから直接バックエンドのテストを実行すると、アプリケーションがホスト名 <code>db</code> でPostgreSQLに接続しようとして失敗しました。
+              </p>
+
+              <p>
+                <span class="log-label">原因:</span>
+                <code>db</code> はDocker Composeのサービス名でした。Composeネットワーク上のコンテナからは名前解決できますが、Mac上で直接実行するpytestのプロセスにとっては、有効なPostgreSQLのホスト名ではありませんでした。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                テストでは分離したSQLiteデータベースを使うように設定し、テスト実行中はアプリケーションのデータベース依存関係をオーバーライドしました。これにより、開発用のPostgreSQLコンテナに接続したりそのデータを変更したりせずに、エンドポイントのテストを独立して実行できるようになりました。
+              </p>
+
+              <p>
+                <span class="log-label">学んだこと:</span>
+                アプリケーションとテストの環境は、表に見えないインフラの前提を共有するべきではありません。依存性注入を使えば、開発と本番ではPostgreSQLを使い続けながら、管理されたデータベースに対してFastAPIのルートをテストできます。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07-26 · フルスタック / React / FastAPI</div>
+
+              <h3>ページネーション導入後のダッシュボード分析の修正</h3>
+
+              <p class="note-summary">ダッシュボードの合計が、在庫全体ではなく、ページネーションされた10件分のデータから計算されていました。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：ページネーション導入後のダッシュボード分析の修正</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題:</span>
+                Inventory Management System の商品数を増やしている際に、ダッシュボードの
+                統計情報が PostgreSQL に保存されている在庫データと一致していないことに
+                気づきました。新しい商品を追加しても、ダッシュボードは10件分のデータだけを
+                使用して合計を表示していました。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                バックエンド API を確認し、<code>/items</code> エンドポイントが意図的に
+                10件までのデータを返すページネーション設定になっていることを確認しました。
+                次に、<code>/items/stats</code>、<code>/items/category-summary</code>、
+                <code>/items/category-value</code> をテストし、データベース全体を対象に
+                集計していることを確認しました。React フロントエンドを修正し、
+                ダッシュボードの統計には集計専用エンドポイントを使用しながら、
+                在庫一覧にはページネーションを残しました。
+              </p>
+
+              <p>
+                <span class="log-label">学び:</span>
+                ページネーションされた一覧データを、ダッシュボード全体の統計計算に
+                使用するべきではありません。React の UI から API、データベースまで
+                データの流れを確認したことで、問題がバックエンドの計算ではなく、
+                フロントエンドのデータ取得方法にあることを特定できました。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07-11 · 認証 / デバッグ / FastAPI</div>
+
+              <h3>JWT Dashboard の管理者アクセスを修正する</h3>
+
+              <p class="note-summary">CORSのオリジン不足と、辞書型の値に対するロール確認が原因で、管理者ページがユーザー一覧を取得できませんでした。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：JWT Dashboard の管理者アクセスを修正する</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題:</span>
+                JWT Authentication Dashboard ではログインはできましたが、
+                管理者ページからユーザー一覧を取得できませんでした。
+                ブラウザでは CORS エラー、接続エラー、500 Internal Server Error が表示されました。
+              </p>
+
+              <p>
+                <span class="log-label">原因:</span>
+                FastAPI バックエンドの CORS 設定に、ローカル開発用の
+                <code>http://localhost:5175</code> が含まれていませんでした。
+                さらに、管理者チェックでは <code>current_user.role</code> を使っていましたが、
+                実際の <code>current_user</code> は辞書型でした。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                CORS の許可リストにローカルフロントエンドのURLを追加し、
+                管理者ロールの確認を <code>current_user.get("role")</code> に変更しました。
+              </p>
+
+              <p>
+                <span class="log-label">学んだこと:</span>
+                フロントエンドに表示されるエラーでも、原因がバックエンドにある場合があります。
+                CORS、認証、認可、デプロイログを順番に確認することが重要だと学びました。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07-11 · ポートフォリオ / フロントエンド / プロジェクト整理</div>
+
+              <h3>ポートフォリオの注目プロジェクトを更新する</h3>
+
+              <p class="note-summary">現在のスキルと最新の作業内容が伝わるように、ポートフォリオの注目プロジェクトを更新しました。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：ポートフォリオの注目プロジェクトを更新する</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題:</span>
+                ポートフォリオの注目プロジェクトが、現在のスキルや最新の作業内容を                
+                十分に反映していませんでした。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                  ホームページの注目プロジェクトを4つに増やし、
+                  Inventory Management System、Bloom、Mini User API、
+                  JWT Authentication Dashboard を中心に表示するようにしました。
+              </p>
+
+              <p>
+                <span class="log-label">学んだこと:</span>
+                  ポートフォリオはプロジェクト一覧ではなく、
+                「それぞれのプロジェクトで何を証明できるか」を伝える場所です。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07 · バックエンド / デバッグ</div>
+
+              <h3>空のAlembicマイグレーションの修正</h3>
+
+              <p class="note-summary">Alembicが、想定していた <code>create_table</code> を含まないマイグレーションファイルを生成しました。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：空のAlembicマイグレーションの修正</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題：</span>
+                Alembic がマイグレーションファイルを生成しましたが、以下が含まれていませんでした：
+                op.create_table(「tickets」, ...)
+              </p>
+
+              <p>
+                <span class="log-label">解決策：</span>
+                プロジェクトルートおよび Backend フォルダ内の正しいコマンドの場所を使用して、
+                マイグレーションファイルを再生成します。
+              </p>
+
+              <p>
+                <span class="log-label">教訓：</span>
+                Alembicは、SQLAlchemyのモデルを現在のデータベースの状態と比較します。
+                テーブルがすでに存在する場合、Alembicは空のマイグレーションを生成することがあります。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07 · フルスタック / React / FastAPI</div>
+
+              <h3>Bloomのルーティン同期問題を修正</h3>
+
+              <p class="note-summary">フロントエンドがバックエンドのCRUD関数を呼び出していなかったため、作成したルーティンがほかのページに表示されませんでした。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：Bloomのルーティン同期問題を修正</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題：</span>
+                  ログインユーザーがRoutinesページで作成したルーティンが、
+                  HomeページやProgressページに表示されず、再読み込み後も正しく保存されていませんでした。
+                  バックエンドAPIはすでに存在していましたが、複数のルーティン機能が動作していないように見える状態でした。
+              </p>
+
+              <p>
+                <span class="log-label">修正：</span>
+                  フロントエンドのデータフローを調査し、Routines.jsxがバックエンドのCRUD関数を
+                  インポートしているにもかかわらず、実際には呼び出していないことを確認しました。
+                  認証済みユーザー向けのバックエンド永続化、ページ間同期イベント、
+                  ローディング表示、エラー表示、Homeページの自動再読み込みを実装しました。
+              </p>
+
+              <p>
+                <span class="log-label">学び：</span>
+                  複数の不具合が、実際には1つの根本原因から発生している場合があります。
+                  個別の症状だけを修正するのではなく、UIからAPI、データベースまで
+                  データの流れ全体を追跡することが重要だと学びました。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-06-13 · バックエンド / テスト / Pytest</div>
+
+              <h3>pytest の import path を修正する</h3>
+
+              <p class="note-summary"><code>pytest.ini</code> で探し始める場所を指定するまで、pytest が <code>app</code> パッケージを見つけられませんでした。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：pytest の import path を修正する</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題:</span>
+                <code>app/__init__.py</code> は存在していたのに、
+                pytest が <code>app</code> パッケージを見つけられませんでした。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                <code>pytest.ini</code> を追加し、<code>pythonpath = .</code> と
+                <code>testpaths = tests</code> を設定しました。
+              </p>
+
+              <p>
+                <span class="log-label">学んだこと:</span>
+                <code>__init__.py</code> はフォルダを Python パッケージとして扱えるようにします。
+                しかし、pytest がどこから探し始めるかは <code>pytest.ini</code> で指定します。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-06 · フロントエンド / アクセシビリティ / UI</div>
+
+              <h3>アプリの表示設定を使いやすくする</h3>
+
+              <p class="note-summary">重要な表示設定を、深い設定ページからヘッダーの小さなメニューへ移すことについてのメモです。</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">詳細を見る</span><span class="when-open">詳細を閉じる</span><span class="visually-hidden">：アプリの表示設定を使いやすくする</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">問題:</span>
+                アクセシビリティ設定が深い設定ページにあると、ユーザーが見つけにくくなります。
+              </p>
+
+              <p>
+                <span class="log-label">修正:</span>
+                フォントサイズや読みやすいフォント設定など、重要な表示設定を
+                ヘッダーの小さなメニューに移動します。
+              </p>
+
+              <p>
+                <span class="log-label">学んだこと:</span>
+                アクセシビリティ設定は、プロフィール設定だけでなく、
+                公開ページやログイン後のページからも簡単に使えるべきです。
+              </p>
+                </div>
+              </details>
+            </article>
+
+            </div>
+          </div>
+
+          <div class="lang-en-block">
+            <div class="section-head">
+              <h2 class="section-label" tabindex="-1">
+                <span class="when-selected">// selected notes</span>
+                <span class="when-all">// all notes</span>
+              </h2>
+
+              <a class="view-all when-selected" href="#notes">View all notes →</a>
+
+              <div class="sort-toggle when-all" role="group" aria-label="Sort order">
+                <button type="button" data-sort="newest" aria-pressed="true">Newer first</button>
+                <button type="button" data-sort="oldest" aria-pressed="false">Older first</button>
+              </div>
+            </div>
+
+            <p class="muted section-lead when-all">Short notes from my projects. Each entry explains the problem, the fix, and the lesson learned.</p>
+
+            <div class="note-list">
+            <article class="card card--latest">
+              <div class="log-meta"><span class="latest-label">Latest</span>2026-10-18 · PartsPilot v3 · Backend / Security / Testing / OpenAPI</div>
+
+              <h3>Verifying an OpenAPI security fix</h3>
+
+              <p class="note-summary">Verified an OpenAPI security fix on the separate PartsPilot v3 branch against the existing tests and endpoint regression checks.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Verifying an OpenAPI security fix</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                The OpenAPI security fix needed to be checked against existing endpoint behaviour.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                A security-related change can risk introducing regressions elsewhere in the API.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Verified the fix on the separate v3 branch; all 70 tests and 55 endpoint
+                regression checks passed. The change has been committed and pushed, but
+                hasn’t been merged into main.
               </p>
 
               <p>
                 <span class="log-label">Lesson:</span>
-                A frontend error is not always a frontend problem. In this case, the visible
-                error appeared in React, but the real causes were backend CORS configuration,
-                deployed API behaviour, and role-checking logic.
+                Check security changes against the broader API regression suite.
               </p>
+                </div>
+              </details>
             </article>
 
             <article class="card">
+              <div class="log-meta">2026-10-16 · Bloom v3 · Information Architecture / Routing / QA</div>
+
+              <h3>From interaction modes to app structure</h3>
+
+              <p class="note-summary">Locked Bloom’s interaction mode specification and mapped it into the app’s information architecture and routes.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: From interaction modes to app structure</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                Bloom’s modes needed to be reflected in the app’s information architecture
+                and routes.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                The mode specification needed to be settled before the route structure could
+                be finalised.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Completed and locked the mode specification, mapped it into the information
+                architecture and routes, then QA-checked the routes.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                Define the experience modes before finalising routes, so the app’s structure
+                follows the intended experience.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card">
+              <div class="log-meta">2026-09-28 · PartsPilot v3 · Backend / Docker / Git</div>
+
+              <h3>Keeping .NET Build Output Out of Git</h3>
+
+              <p class="note-summary">Cleaned up generated .NET build files that were appearing in Git changes during the ongoing PartsPilot v3 migration.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Keeping .NET Build Output Out of Git</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                Generated files in the <code>bin/</code> and <code>obj/</code> folders were showing up
+                alongside the source changes, making the repository status harder to review.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                The generated build output was not fully excluded from Git tracking.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Updated the ignore rules and removed the generated files from Git tracking. This kept
+                the cleanup focused on repository contents; it did not complete the PartsPilot v3 migration.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                Ignore build output early. If generated files are already tracked, updating
+                <code>.gitignore</code> alone is not enough; remove them from the index, then check Git
+                status before staging source changes.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card">
+              <div class="log-meta">2026-08-21 · PartsPilot v2 · Frontend / React / JavaScript / FastAPI / Debugging / Full-Stack</div>
+
+              <h3>Fixing React API Response-Shape Rendering</h3>
+
+              <p class="note-summary">Fixed a React rendering failure caused by storing an API response wrapper object in state instead of the parts array contained inside it.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing React API Response-Shape Rendering</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                The PartsPilot frontend successfully received data from the backend, but the interface
+                failed when it attempted to run <code>parts.map()</code>. React expected
+                <code>parts</code> to be an array, but the state contained the complete response object.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                The FastAPI endpoint returned an object containing an <code>items</code> property rather
+                than returning an array directly. The frontend used <code>setParts(data)</code>, which
+                stored the wrapper object in state. Array methods such as <code>map</code> could not be
+                used on that object.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Inspected the returned JSON structure and changed the state update to
+                <code>setParts(data.items)</code>. Confirmed the data path by working through the
+                response as object, property, array index, and item property before rendering it in JSX.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                A successful API request does not guarantee that the returned data has the shape a
+                component expects. Before updating React state, inspect the response structure and store
+                the specific value the interface needs.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card">
+              <div class="log-meta">2026-08-21 · PartsPilot v2 · Docker / React / FastAPI / CORS / Debugging / Full-Stack</div>
+
+              <h3>Debugging Docker Port Mapping and CORS</h3>
+
+              <p class="note-summary">Diagnosed a failed React-to-FastAPI connection by separating the container’s internal port from the port exposed to the host and then correcting the backend CORS configuration.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Debugging Docker Port Mapping and CORS</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                The React frontend could not load parts from the FastAPI backend. Requests targeted
+                <code>localhost:8000</code> even though Docker exposed the API to the host on port 8001.
+                Browser requests also required permission to cross from the frontend origin to the
+                backend origin.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                The Docker mapping <code>8001:8000</code> meant FastAPI listened on port 8000 inside its
+                container but was accessed through port 8001 from the host browser. The frontend and
+                backend also ran on different origins, so the browser applied CORS restrictions.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Changed the frontend request URL to use <code>http://localhost:8001/api/parts</code> and
+                configured FastAPI to allow requests from the frontend development origin. Used the
+                browser error and HTTP response type to distinguish connection, route, authentication,
+                server, and CORS failures.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                Docker port mappings have a container side and a host side. Browser-based frontend code
+                must use the host port, while cross-origin permission must be configured by the backend
+                rather than bypassed in the frontend.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card">
+              <div class="log-meta">2026-08-04 · PartsPilot v2 · Backend / FastAPI / Pytest / SQLAlchemy / PostgreSQL / Docker</div>
+
+              <h3>Fixing PartsPilot Tests Outside Docker</h3>
+
+              <p class="note-summary">Separated the PartsPilot test environment from its Docker-only PostgreSQL hostname by introducing an isolated test database and FastAPI dependency overrides.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing PartsPilot Tests Outside Docker</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                Backend tests failed when they were run directly from the host machine because the
+                application attempted to connect to PostgreSQL using the hostname <code>db</code>.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                The hostname <code>db</code> was the Docker Compose service name. It could be resolved by
+                containers on the Compose network, but it was not a valid PostgreSQL hostname for pytest
+                processes running directly on the Mac.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Configured the tests to use an isolated SQLite database and overrode the application’s
+                database dependency during test execution. This allowed endpoint tests to run
+                independently without connecting to the development PostgreSQL container or changing
+                its data.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                Application and test environments should not share hidden infrastructure assumptions.
+                Dependency injection makes it possible to test FastAPI routes against a controlled
+                database while preserving PostgreSQL for development and production.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07-26 · Full-Stack / React / FastAPI</div>
+
+              <h3>Fixing Dashboard Analytics After Introducting Pagination</h3>
+
+              <p class="note-summary">Dashboard totals were being calculated from a paginated ten-item response instead of the full inventory.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing Dashboard Analytics After Introducting Pagination</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                While expanding the Inventory Management System, I noticed the dashboard
+                statistics did not match the inventory stored in PostgreSQL. New products
+                were added, but the dashboard continued to display totals based on only ten
+                items.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                I reviewed the backend API and confirmed that the <code>/items</code>
+                endpoint intentionally limits results to ten records. I then tested the
+                <code>/items/stats</code>, <code>/items/category-summary</code>, and
+                <code>/items/category-value</code> endpoints and confirmed that they
+                calculated data across the full database. I updated the React frontend to
+                use these aggregation endpoints for dashboard statistics while keeping the
+                inventory list paginated.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                Paginated operational data should not be used to calculate global dashboard
+                metrics. Tracing data from the React UI through the API and database helped
+                identify that the issue was caused by the frontend data flow rather than the
+                backend calculations.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07-11 · Authentication / Debugging / FastAPI</div>
+
+              <h3>Fixing JWT Dashboard Admin Access</h3>
+
+              <p class="note-summary">The Admin page could not load users because of a missing CORS origin and a role check written for an object instead of a dictionary.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing JWT Dashboard Admin Access</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                The JWT Authentication Dashboard login flow worked, but the Admin page
+                could not load users from the deployed Mini User API backend.
+                The browser showed CORS errors, connection errors, and a 500 Internal Server Error.
+              </p>
+
+              <p>
+                <span class="log-label">Cause:</span>
+                The deployed FastAPI backend did not allow the local frontend origin
+                <code>http://localhost:5175</code>. The admin route also tried to use
+                <code>current_user.role</code>, but <code>current_user</code> was actually                
+                a dictionary returned from the auth dependency.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                I added the local frontend origin to the backend CORS allow list and changed
+                the admin role check to use <code>current_user.get("role")</code>.
+                </p>
+
+                <p>
+                  <span class="log-label">Lesson:</span>
+                  A frontend error is not always a frontend problem. In this case, the visible
+                  error appeared in React, but the real causes were backend CORS configuration,
+                  deployed API behaviour, and role-checking logic.
+                </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
               <div class="log-meta">2026-07-11 · Portfolio / Frontend / Project Presentation</div>
 
               <h3>Updating Portfolio Featured Projects</h3>
+
+              <p class="note-summary">Updated the portfolio’s featured projects so the homepage reflects the strongest and most current work.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Updating Portfolio Featured Projects</span>
+                </summary>
+
+                <div class="note-body">
 
               <p>
                 <span class="log-label">Problem:</span>
@@ -557,203 +1628,335 @@
                 project proves, such as authentication, backend API design, deployment,
                 CI/CD, accessibility, or full-stack integration.
               </p>
-          </article>
+                </div>
+              </details>
+            </article>
 
-          <article class="card">
-            <div class="log-meta">2026-06-13 · Backend / Testing / Pytest</div>
+            <article class="card note-extra">
+              <div class="log-meta">2026-07 · Backend / Debugging</div>
 
-            <h3>Fixing pytest import paths</h3>
+              <h3>Fixing an Empty Alembic Migration</h3>
+
+              <p class="note-summary">Alembic generated a migration file without the expected <code>create_table</code> call.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing an Empty Alembic Migration</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                Alembic created a migration file but this did not include:
+                op.create_table("tickets", ...)
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Using the correct command locations in the Project Root and Backend folder
+                to regenerate the migration file.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                Alembic compares SQLAlchemy models against the current database state.
+                If the table already exists, Alembic may generate an empty migration.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-07 · Full-Stack / React / FastAPI</div>
+
+              <h3>Fixing Bloom Routine Synchronisation</h3>
+
+              <p class="note-summary">Routines created on one page did not appear elsewhere because the frontend never called the backend CRUD functions.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing Bloom Routine Synchronisation</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                  Routines created by logged-in users appeared on the Routines page but did not
+                  appear on Home, Progress, or after refresh. Several routine-related features
+                  seemed broken despite the backend APIs already existing.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                  Investigated the frontend data flow and discovered that Routines.jsx never
+                  called the backend CRUD functions. Added authenticated backend persistence,
+                  routine synchronisation events, loading states, and automatic Home page
+                  refreshes after routine changes.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                  Multiple bugs can often share a single root cause. Following data from the
+                  UI through the API and database is often more effective than fixing symptoms
+                  individually.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-06-13 · Backend / Testing / Pytest</div>
+
+              <h3>Fixing pytest import paths</h3>
+
+              <p class="note-summary">pytest could not find the <code>app</code> package until <code>pytest.ini</code> set where to start looking.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Fixing pytest import paths</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                pytest could not find the <code>app</code> package, even though
+                <code>app/__init__.py</code> existed.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Added a <code>pytest.ini</code> file with <code>pythonpath = .</code>
+                and <code>testpaths = tests</code>.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span>
+                <code>__init__.py</code> makes a folder a Python package, but
+                <code>pytest.ini</code> tells pytest where to start looking from.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            <article class="card note-extra">
+              <div class="log-meta">2026-06 · Frontend / Accessibility / UI</div>
+
+              <h3>Making app controls easier to access</h3>
+
+              <p class="note-summary">Moving important display controls out of a deep settings page and into a small header menu.</p>
+
+              <details class="note-details">
+                <summary>
+                  <span class="when-closed">Show details</span><span class="when-open">Hide details</span><span class="visually-hidden">: Making app controls easier to access</span>
+                </summary>
+
+                <div class="note-body">
+
+              <p>
+                <span class="log-label">Problem:</span>
+                Accessibility controls can be difficult to find if they are hidden
+                deep inside a settings page.
+              </p>
+
+              <p>
+                <span class="log-label">Fix:</span>
+                Move important display controls, such as font size and readable font options,
+                into a small header menu.
+              </p>
+
+              <p>
+                <span class="log-label">Lesson:</span> 
+                Accessibility settings should be easy to reach from public and logged-in pages,
+                not only from profile settings.
+              </p>
+                </div>
+              </details>
+            </article>
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="view" id="view-about">
+        <section id="about" class="prose">
+          <div class="lang-jp">
+            <h1 class="section-label" tabindex="-1">// ひとこと</h1>
 
             <p>
-              <span class="log-label">Problem:</span>
-              pytest could not find the <code>app</code> package, even though
-              <code>app/__init__.py</code> existed.
+              自動車業界のオペレーション分野から、ソフトウェアエンジニアリングへ移行中です。<br />
+              仕事で身についた考え方、つまり体系的に、丁寧に、「何を」だけでなく「なぜ」まで残すことを、そのまま開発にも活かしています。
             </p>
 
             <p>
-              <span class="log-label">Fix:</span>
-              Added a <code>pytest.ini</code> file with <code>pythonpath = .</code>
-              and <code>testpaths = tests</code>.
+              このノートには、うまくいったことだけでなく、つまずいた理由とその乗り越え方も記録していきます。
+            </p>
+          </div>
+
+          <div class="lang-en-block">
+            <h1 class="section-label" tabindex="-1">// in short</h1>
+
+            <p>
+              My background is in automotive operations, and I’m moving into software engineering. I build the way that work taught me to think: systematically, carefully, and with documentation that explains the why, not just the what.
             </p>
 
             <p>
-              <span class="log-label">Lesson:</span>
-              <code>__init__.py</code> makes a folder a Python package, but
-              <code>pytest.ini</code> tells pytest where to start looking from.
+              This notebook is the honest record: the decisions, the bugs, and how I got past them.
             </p>
-          </article>
+          </div>
+        </section>
 
-          <article class="card">
-            <div class="log-meta">2026-06 · Frontend / Accessibility / UI</div>
+        <section id="about-contact">
+          <h2 class="section-label">
+            <span class="lang-jp">// 連絡先</span>
+            <span class="lang-en">// contact</span>
+          </h2>
 
-            <h3>Making app controls easier to access</h3>
-
-            <p>
-              <span class="log-label">Problem:</span>
-              Accessibility controls can be difficult to find if they are hidden
-              deep inside a settings page.
-            </p>
-
-            <p>
-              <span class="log-label">Fix:</span>
-              Move important display controls, such as font size and readable font options,
-              into a small header menu.
-            </p>
-
-            <p>
-              <span class="log-label">Lesson:</span> 
-              Accessibility settings should be easy to reach from public and logged-in pages,
-              not only from profile settings.
-            </p>
-          </article>
-          
-          <article class="card">
-            <div class="log-meta">2026-07 · Backend / Debugging</div>
-
-            <h3>Fixing an Empty Alembic Migration</h3>
-
-            <p>
-              <span class="log-label">Problem:</span>
-              Alembic created a migration file but this did not include:
-              op.create_table("tickets", ...)
-            </p>
-
-            <p>
-              <span class="log-label">Fix:</span>
-              Using the correct command locations in the Project Root and Backend folder
-              to regenerate the migration file.
-            </p>
-
-            <p>
-              <span class="log-label">Lesson:</span>
-              Alembic compares SQLAlchemy models against the current database state.
-              If the table already exists, Alembic may generate an empty migration.
-            </p>
-          </article>
-
-          <article class="card">
-            <div class="log-meta">2026-07 · Full-Stack / React / FastAPI</div>
-
-            <h3>Fixing Bloom Routine Synchronisation</h3>
-
-            <p>
-              <span class="log-label">Problem:</span>
-                Routines created by logged-in users appeared on the Routines page but did not
-                appear on Home, Progress, or after refresh. Several routine-related features
-                seemed broken despite the backend APIs already existing.
-            </p>
-
-            <p>
-              <span class="log-label">Fix:</span>
-                Investigated the frontend data flow and discovered that Routines.jsx never
-                called the backend CRUD functions. Added authenticated backend persistence,
-                routine synchronisation events, loading states, and automatic Home page
-                refreshes after routine changes.
-            </p>
-
-            <p>
-              <span class="log-label">Lesson:</span>
-                Multiple bugs can often share a single root cause. Following data from the
-                UI through the API and database is often more effective than fixing symptoms
-                individually.
-            </p>
-          </article>
-
-          <article class="card">
-            <div class="log-meta">2026-07-26 · Full-Stack / React / FastAPI</div>
-
-            <h3>Fixing Dashboard Analytics After Introducting Pagination</h3>
-
-            <p>
-              <span class="log-label">Problem:</span>
-              While expanding the Inventory Management System, I noticed the dashboard
-              statistics did not match the inventory stored in PostgreSQL. New products
-              were added, but the dashboard continued to display totals based on only ten
-              items.
-            </p>
-
-            <p>
-              <span class="log-label">Fix:</span>
-              I reviewed the backend API and confirmed that the <code>/items</code>
-              endpoint intentionally limits results to ten records. I then tested the
-              <code>/items/stats</code>, <code>/items/category-summary</code>, and
-              <code>/items/category-value</code> endpoints and confirmed that they
-              calculated data across the full database. I updated the React frontend to
-              use these aggregation endpoints for dashboard statistics while keeping the
-              inventory list paginated.
-            </p>
-
-            <p>
-              <span class="log-label">Lesson:</span>
-              Paginated operational data should not be used to calculate global dashboard
-              metrics. Tracing data from the React UI through the API and database helped
-              identify that the issue was caused by the frontend data flow rather than the
-              backend calculations.
-            </p>
-          </article>
-          
-        </div>
-      </section>
-
-      <section id="contact">
-        <div class="lang-jp">
-          <h2>連絡先</h2>
-
-          <p class="muted">
-            こちらからどうぞ。
-          </p>
-        </div>
-
-        <div class="lang-en-block">
-          <h2>Contact</h2>
-
-          <p class="muted">
-            Find me here.
-          </p>
-        </div>
-
-        <div class="contact-grid">
-          <a class="contact-link" href="https://github.com/Iris408" target="_blank">
-            <span class="lang-jp">GitHub</span>
-            <span class="lang-en">GitHub</span>
-          </a>
-
-          <a class="contact-link" href="https://linkedin.com/in/ashleigh-magloire" target="_blank">
-            <span class="lang-jp">LinkedIn</span>
-            <span class="lang-en">LinkedIn</span>
-          </a>
-
-          <a class="contact-link" href="mailto:ashmagloire45@icloud.com">
-            <span class="lang-jp">メールを送る</span>
-            <span class="lang-en">Email</span>
-          </a>
-        </div>
-      </section>
+          <div class="contact-grid">
+            <a class="contact-link" href="https://github.com/Iris408" target="_blank" rel="noopener noreferrer">→ GitHub</a>
+            <a class="contact-link" href="https://linkedin.com/in/ashleigh-magloire" target="_blank" rel="noopener noreferrer">→ LinkedIn</a>
+          </div>
+        </section>
+      </div>
     </main>
 
     <footer>
-      <div class="lang-jp">
-        © 2026 マグロワールアシュリー | ミニマルな single-file 技術ブログとして作成。
-      </div>
+      <p class="copyright">
+        <span class="lang-jp">© 2026 Ashleigh Magloire</span>
+        <span class="lang-en">© 2026 Ashleigh Magloire</span>
+      </p>
 
-      <div class="lang-en-block">
-        © 2026 Ashleigh M. Built as a minimalist single-file technical blog.
-      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#about">
+          <span class="lang-jp">自己紹介</span>
+          <span class="lang-en">About</span>
+        </a>
+        <a href="https://github.com/Iris408" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://linkedin.com/in/ashleigh-magloire" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </nav>
     </footer>
   </div>
 
   <script>
-    function setLanguage(language) {
-      if (language === "en") {
-        document.body.classList.add("show-en");
-        document.documentElement.lang = "en";
-        document.title = "Ashleigh M. | Technical Blog";
+    var root = document.documentElement;
+    var currentLanguage = root.classList.contains("show-en") ? "en" : "jp";
+    var titles = {
+      home: { jp: "マグロワールアシュリー - 技術ノート", en: "Ashleigh Magloire - Technical Notebook" },
+      notes: { jp: "すべてのノート - マグロワールアシュリー", en: "All notes - Ashleigh Magloire" },
+      about: { jp: "自己紹介 - マグロワールアシュリー", en: "About - Ashleigh Magloire" }
+    };
+
+    function updateTitle() {
+      document.title = titles[root.getAttribute("data-view")][currentLanguage];
+    }
+
+    function updateThemeLabel() {
+      var isDark = root.getAttribute("data-theme") === "dark";
+      var label;
+
+      if (currentLanguage === "en") {
+        label = isDark ? "Switch to light mode" : "Switch to dark mode";
       } else {
-        document.body.classList.remove("show-en");
-        document.documentElement.lang = "ja";
-        document.title = "マグロワールアシュリー | 技術ブログ";
+        label = isDark ? "ライトモードに切り替える" : "ダークモードに切り替える";
+      }
+
+      var button = document.getElementById("theme-toggle");
+      button.setAttribute("aria-label", label);
+      button.setAttribute("title", label);
+    }
+
+    function toggleTheme() {
+      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+
+      root.setAttribute("data-theme", next);
+      try {
+        localStorage.setItem("theme", next);
+      } catch (e) {}
+      updateThemeLabel();
+    }
+
+    function setLanguage(language) {
+      currentLanguage = language === "en" ? "en" : "jp";
+
+      root.classList.toggle("show-en", currentLanguage === "en");
+      root.lang = currentLanguage === "en" ? "en" : "ja";
+
+      document.getElementById("lang-jp").setAttribute("aria-pressed", String(currentLanguage === "jp"));
+      document.getElementById("lang-en").setAttribute("aria-pressed", String(currentLanguage === "en"));
+      try {
+        localStorage.setItem("language", currentLanguage);
+      } catch (e) {}
+      updateThemeLabel();
+      updateTitle();
+    }
+
+    // Hash router: #about and #about-contact show the About view, #notes shows the Notes view
+    // (every note), anything else shows the home view. Uses hashchange, so back/forward work natively.
+    function showView(moveFocus) {
+      var hash = location.hash.slice(1);
+      var view = hash === "about" || hash === "about-contact" ? "about" : hash === "notes" ? "notes" : "home";
+
+      root.setAttribute("data-view", view);
+      applySortOrder();
+      [].forEach.call(document.querySelectorAll("[data-nav]"), function (link) {
+        link.toggleAttribute("aria-current", link.getAttribute("data-nav") === view);
+      });
+      updateTitle();
+
+      var target = hash === "about-contact" ? document.getElementById("about-contact") : null;
+
+      if (target) {
+        target.scrollIntoView();
+      } else {
+        window.scrollTo(0, 0);
+      }
+
+      if (moveFocus) {
+        var scope = view === "about" ? "#view-about" : view === "notes" ? "#notes" : "#view-home";
+        var heading = [].slice.call(document.querySelectorAll(scope + " [tabindex='-1']")).filter(function (el) {
+          return el.offsetParent !== null;
+        })[0];
+        if (heading) heading.focus({ preventScroll: true });
       }
     }
+
+    // Archive order. The DOM order is the source order (newest first); "oldest" reverses it,
+    // only in the Notes view, so the home view always shows the six selected notes newest first.
+    var sortOrder = "newest";
+    var noteLists = [].map.call(document.querySelectorAll(".note-list"), function (list) {
+      return { element: list, notes: [].slice.call(list.children) };
+    });
+
+    function applySortOrder() {
+      var reverse = sortOrder === "oldest" && root.getAttribute("data-view") === "notes";
+
+      noteLists.forEach(function (list) {
+        var notes = reverse ? list.notes.slice().reverse() : list.notes;
+        notes.forEach(function (note) {
+          list.element.appendChild(note);
+        });
+      });
+      [].forEach.call(document.querySelectorAll("[data-sort]"), function (button) {
+        button.setAttribute("aria-pressed", String(button.getAttribute("data-sort") === sortOrder));
+      });
+    }
+
+    [].forEach.call(document.querySelectorAll("[data-sort]"), function (button) {
+      button.addEventListener("click", function () {
+        sortOrder = button.getAttribute("data-sort");
+        applySortOrder();
+      });
+    });
+
+    window.addEventListener("hashchange", function () {
+      showView(true);
+    });
+
+    setLanguage(currentLanguage);
+    if (location.hash) showView(false);
   </script>
 </body>
 </html>
